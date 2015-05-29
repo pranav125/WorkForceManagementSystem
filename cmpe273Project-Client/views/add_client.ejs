@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript"
+	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyApNXTf01V3vzNMtRNGYBCxEXEaxAv8fBM">
+	
+</script>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+<link rel='stylesheet' href='/stylesheets/bootstrap.min.css' />
+<link rel='stylesheet' href='/stylesheets/custom.css' />
+<script>
+	function validateForm() {
+		var ssn = document.getElementById("client_number").value;
+		var pattern = /^\d{3}-\d{2}-\d{4}$/;
+		if (ssn.match(pattern))
+			alert("OK");
+		else
+			alert("Not OK");
+	}
+</script>
+</head>
+<body>
+	<div class="row shadow">
+		<div class="col-md-4" style="padding-left: 60px;">
+			<a href="/goToClientsHome" style="text-decoration: none;"><h3>
+
+				&nbsp; <font color="#157DEC" size="4">Workforce Management
+					System</font>
+			</h3></a>	
+		</div>
+		<div class="col-md-2" style="margin-top: 20px; margin-bottom: 20px;">
+			<label name="firstname">Welcome, Admin</label>
+		</div>
+	</div>
+
+	<div class="row shadow"
+		style="margin: auto; margin-top: 20px; padding-bottom: 10px; width: 900px;">
+		<form action="client" onsubmit="return validateForm();" method="post">
+			<div class="col-md-12 shadow"
+				style="padding: 10px; margin-bottom: 10px;" align="center">
+				<label style="font-size: 20px;">Add a Client</label>
+			</div>
+			<div class="col-md-12" align="center">
+				<label for="client_number">Client Number</label> <input type="text"
+					name="client_id_no" id="client_id_no" class="form-control"
+					style="width: 50%;"pattern="^\d{3}-\d{2}-\d{4}$"  required/>
+			</div>
+			<div class="col-md-12" align="center">
+				<label>Client Name</label> <input type="text" name="client_name"
+					id="client_name" class="form-control" style="width: 50%;" />
+			</div>
+			<div class="col-md-12" align="center">
+				<label>Monthly Service Charge</label> <input type="text" name="monthly_Service_charge"
+					id="monthly_Service_charge" class="form-control" style="width: 50%;" />
+			</div>
+			<div class="col-md-12" align="center">
+				<label>Balance</label> <input type="text" name="balance"
+					id="balance" class="form-control" style="width: 50%;" />
+			</div>
+			<div class="col-md-12" align="center">
+				<label>Service Start Date</label> <input type="text"
+					name="service_start_date" id="service_start_date"
+					class="form-control" style="width: 50%;" />
+			</div>
+			<div class="col-md-12" align="center">
+				<label>Service End Date</label> <input type="text"
+					name="service_end_date" id="service_end_date" class="form-control"
+					style="width: 50%;"/>
+			</div>
+			<div class="col-md-12" align="center" style="margin-top: 10px;">
+				<input type="submit" name="btn_add_client" id="btn_add_client"
+					class="btn btn-default"
+					style="background: #157DEC; color: white; width: 50%;"
+					value="Add Client" />
+			</div>
+		</form>
+	</div>
+</body>
+</html>

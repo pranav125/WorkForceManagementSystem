@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style type="text/css">
+html, body, #map-canvas {
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+.labels {
+	color: red;
+	background-color: white;
+	font-family: "Lucida Grande", "Arial", sans-serif;
+	font-size: 10px;
+	font-weight: bold;
+	text-align: center;
+	width: 60px;
+	border: 2px solid black;
+	white-space: nowrap;
+}
+</style>
+<script type="text/javascript"
+	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyApNXTf01V3vzNMtRNGYBCxEXEaxAv8fBM">
+	
+</script>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+<!-- <script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script> -->
+<script
+	src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<link rel='stylesheet' href='/stylesheets/bootstrap.min.css' />
+<script type="text/javascript">
+	var marker;
+	var infowindow;
+	function handleNoGeolocation(errorFlag, firstlat, firstlng) {
+		if (errorFlag) {
+			var content = 'Error: The Geolocation service failed.';
+		} else {
+			var content = 'Error: Your browser doesn\'t support geolocation.';
+		}
+
+		var options = {
+			map : map,
+			position : new google.maps.LatLng(firstlat, firstlng),
+			content : content
+		};
+
+		var infowindow = new google.maps.InfoWindow(options);
+		map.setCenter(options.position);
+	}
+
+	function initialize(firstlat, firstlng) {
+		var mapOptions = {
+			zoom : 18
+		};
+
+		var map = new google.maps.Map(document.getElementById('map-canvas'),
+				mapOptions);
+
+		// Try HTML5 geolocation
+		if (navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition(function(position) {
+				var pos = new google.maps.LatLng(firstlat, firstlng);
+
+				marker = new google.maps.Marker({
+					map : map,
+					position : pos,
+
+				});
+
+				marker.set('labelContent', 'sdda');
+
+				infowindow = new google.maps.InfoWindow();
+
+				codeLatLng(position.coords.latitude, position.coords.longitude,
+						map, marker);
+
+				google.maps.event.addListener(marker, 'click', function() {
+					infowindow.open(map, marker);
+				});
+
+				map.setCenter(pos);
+			}, function() {
+				handleNoGeolocation(true, firstlat, firstlng);
+			});
+		} else {
+			// Browser doesn't support Geolocation
+			handleNoGeolocation(false, firstlat, firstlng);
+		}
+
+		google.maps.event.addListener(map, 'click',
+				function(event) {
+					console.log(event.latLng.lat() + " " + event.latLng.lng());
+					if (marker) {
+						marker.setPosition(event.latLng);
+						codeLatLng(event.latLng.lat(), event.latLng.lng(), map,
+								marker);
+
+					} else {
+						marker = new google.maps.Marker({
+							position : location,
+							map : map
+						});
+					}
+
+				});
+	}
+
+	function setContent(marker) {
+
+	}
+
+	function codeLatLng(lat, lng, map, marker) {
+
+		var latlng = new google.maps.LatLng(lat, lng);
+
+		var geocoder = new google.maps.Geocoder();
+		geocoder.geocode({
+			'latLng' : latlng
+		}, function(results, status) {
+
+			if (status == google.maps.GeocoderStatus.OK) {
+
+				if ($('#start_latitude').val() == '') {
+					$("#start_latitude").val(lat);
+					$("#start_longitude").val(lng);
+					infowindow.setContent("Start Point");
+					infowindow.open(map, marker);
+				} else {
+					$("#end_latitude").val(lat);
+					$("#end_longitude").val(lng);
+					infowindow.setContent("End Point");
+					infowindow.open(map, marker);
+				}
+
+			} else {
+				alert('Geocoder failed due to: ' + status);
+			}
+		});
+	}
+
+	//google.maps.event.addDomListener(window, 'load', initialize);
+</script>
+</head>
+<body onload="initialize('<%= latitude %>','<%= longitude %>');">
+	<div class="row shadow">
+		<div class="col-md-4" style="padding-left: 60px;">
+			<a href="/goToClientsHome" style="text-decoration: none;"><h3>
+
+				&nbsp; <font color="#157DEC" size="4">Workforce Management
+					System</font>
+			</h3></a>	
+		</div>
+		<div class="col-md-2" style="margin-top: 20px; margin-bottom: 20px;">
+			<label name="firstname">Welcome, Admin</label>
+		</div>
+	</div>
+	<form action="checkpoint" method="post">
+		<div class="row"
+			style="width: 900px; margin: 0px auto; box-shadow: 1px 0px 5px 8px rgba(0, 0, 0, 0.1); margin-top: 30px;">
+
+			<div class="col-md-12"
+				style="width: 900px; margin: 0px auto; margin-top: 15px;"
+				align="center">
+				<input type="submit" style="background: #157DEC; color: white;"
+					value="Add a Checkpoint" class="btn btn-default" />
+			</div>
+			<div class="col-md-6">
+				<div class="row"
+					style="width: 400px; margin: 15px auto; margin-top: 30px;">
+
+					<div id="map-canvas" class="col-md-12"
+						style="height: 400px; box-shadow: 1px 0px 5px 3px rgba(0, 0, 0, 0.15); padding: 10px;"></div>
+
+					<input type="hidden" name="latitude" id="latitude" /> <input
+						type="hidden" name="longitude" id="longitude" />
+				</div>
+			</div>
+
+			<div class="col-md-6">
+
+				<div class="row"
+					style="width: 400px; margin: 0px auto; margin-top: 30px;">
+
+					<div id="" class="col-md-12" style="margin-top: 10px;">
+						<h4>
+							<small style="color: black;">Client Name</small>
+						</h4>
+					</div>
+					<div id="" class="col-md-12">
+						<input type="text" class="form-control" name="client_name"
+							id="client_name" value="<%= client_name %>" placeholder=""
+							readonly="readonly" style="color: black;" /> <input
+							type="hidden" name="client_id" id="client_id"
+							value="<%= client_id %>" />
+					</div>
+
+
+					<div id="" class="col-md-12" style="margin-top: 10px;">
+						<h4>
+							<small style="color: black;">Building Name</small>
+						</h4>
+					</div>
+					<div id="" class="col-md-12" style="">
+						<input type="text" class="form-control" id="building_name"
+							name="building_name" placeholder="" style="color: black;"
+							readonly="readonly" value="<%= building_name %>" /> <input
+							type="hidden" name="building_id" id="building_id"
+							value="<%= building_id %>" />
+					</div>
+
+					<div id="" class="col-md-12" style="margin-top: 10px;">
+						<h4>
+							<small style="color: black;">Start Point</small>
+						</h4>
+					</div>
+					<div id="" class="col-md-8" style="">
+						<input type="text" class="form-control" id="start_latitude"
+							name="start_latitude" placeholder="" style="color: black;"
+							readonly="readonly" /> <input type="text" class="form-control"
+							id="start_longitude" name="start_longitude" placeholder=""
+							style="color: black; black; margin-top: 10px;"
+							readonly="readonly" />
+
+					</div>
+					<div id="" class="col-md-4" style="">
+
+						<input type="button" class="btn btn-default"
+							id="start_point_button" name="start_point_button" value="Clear"
+							style="color: black;" readonly="readonly"
+							onclick="$('#start_latitude').val('');$('#start_longitude').val('');" />
+					</div>
+
+					<div id="" class="col-md-12" style="margin-top: 10px;">
+						<h4>
+							<small style="color: black;">End Point</small>
+						</h4>
+					</div>
+					<div id="" class="col-md-8" style="">
+						<input type="text" class="form-control" id="end_latitude"
+							name="end_latitude" placeholder="" style="color: black;"
+							readonly="readonly" /> <input type="text" class="form-control"
+							id="end_longitude" name="end_longitude" placeholder=""
+							style="color: black; margin-top: 10px;" readonly="readonly" />
+					</div>
+
+					<div id="" class="col-md-4" style="">
+						<input type="button" class="btn btn-default"
+							id="start_point_button" name="start_point_button" value="Clear"
+							style="color: black;" readonly="readonly"
+							onclick="$('#end_point').val('');" />
+					</div>
+				</div>
+
+
+			</div>
+		</div>
+	</form>
+</body>
+</html>

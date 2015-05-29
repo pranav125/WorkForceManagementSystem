@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title></title>
+<script type="text/javascript"
+	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyApNXTf01V3vzNMtRNGYBCxEXEaxAv8fBM">
+    
+</script>
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<script
+	src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.js"></script>
+
+<script
+	src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular-route.min.js"></script>
+
+
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+<script
+	src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script
+	src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.js"></script>
+
+<script
+	src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular-route.min.js"></script>
+<script src="/js/bootstrap-datepicker.js"></script>
+
+<script>
+    $('.datepicker').datepicker()
+</script>
+
+
+<link rel='stylesheet' href='/stylesheets/bootstrap.min.css' />
+<link rel='stylesheet' href='/stylesheets/custom.css' />
+
+</head>
+<body>
+	<div ng-app="" ng-controller="alertController" class="">
+		<div class="row shadow">
+			<div class="col-md-4" style="padding-left: 60px;">
+				<a href="/goToClientsHome" style="text-decoration: none;"><h3>
+
+						&nbsp; <font color="#157DEC" size="4">Workforce Management
+							System</font>
+					</h3></a>
+			</div>
+
+			<div class="col-md-1" style="margin-top: 20px; margin-bottom: 20px;">
+				<a href="./goToClientsHome" class="btn btn-default add">Clients</a>
+			</div>
+			<div class="col-md-1" style="margin-top: 20px; margin-bottom: 20px;">
+
+				<a href="./redirectToGuards" class="btn btn-default add">Guards</a>
+			</div>
+
+	
+			<div class="col-md-1" style="margin-top: 20px; margin-bottom: 20px;">
+
+				<a href="./report" class="btn btn-default add">Reports</a>
+			</div>
+			<div class="col-md-1" style="margin-top: 20px; margin-bottom: 20px;">
+
+				<a href="./alert" class="btn btn-default add">Alerts</a>
+			</div>
+
+			<div class="col-md-2" style="margin-top: 20px; margin-bottom: 20px;">
+				<label name="firstname">Welcome, Admin</label>
+			</div>
+		</div>
+
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-4">
+
+
+					<form role="form" class="horizontal-form">
+						<h2>Alert Criteria</h2>
+
+						<select ng-model="alertcriteria" ng-change="criteriach()"
+							class="form-control" ng-options="cri.name for cri in criterias">
+
+						</select> <br>
+
+					</form>
+				</div>
+				<!--inner col1-->
+
+
+				<div class="col-md-4">
+
+					<div ng-model="dsp" ng-if="dsp=='Day'">
+						<form role="form" class="horizontal-form">
+							<h2>Select Date</h2>
+							<div class="input-append date">
+								<input type="text" value="02-16-2012" class="datepicker"
+									id="datepicker" name="birthday" ng-model="parent.daydate">
+								<span class="add-on"><i class="icon-th"></i></span>
+							</div>
+							<button class="btn btn-primary pull-right"
+								ng-click="getAlertDate()">Go</button>
+						</form>
+					</div>
+					<!-- end of ngif-->
+
+					<div ng-model="dsp" ng-if="dsp=='Client'">
+						<form role="form" class="horizontal-form">
+							<h2>Select Client</h2>
+
+							<select class="form-control"
+								ng-options="client.client_name for client in clients"
+								ng-change="changeCmodel(clients12)" ng-model="clients12"></select>
+							<br>
+							<button class="btn btn-primary pull-right"
+								ng-click="getAlertClient()">Go</button>
+						</form>
+					</div>
+					<!-- end of ng if -->
+
+					<div ng-model="dsp" ng-if="dsp=='Building'">
+						<form role="form" class="horizontal-form">
+							<h2>Select Client</h2>
+
+							<select ng-model="clients1" ng-change="getBuild(clients1)"
+								class="form-control"
+								ng-options="client.client_name for client in clients"></select>
+							<br>
+							<div ng-model="bds" ng-if="bds=='true'">
+								<h2>Select building</h2>
+								<select style="" ng-model="building1"
+									ng-change="changeBmodel(building1)" class="form-control"
+									data-ng-options="building.building_name for building in builds"></select>
+							</div>
+							<br>
+
+							<button class="btn btn-primary pull-right"
+								ng-click="getAlertBuilding()">Go</button>
+						</form>
+					</div>
+					<!-- end of ngif-->
+
+				</div>
+
+			</div>
+			<!--row -->
+			<div class="row">
+				<div class="col-md-3">
+					<h2>Client</h2>
+				</div>
+				<div class="col-md-3">
+					<h2>Building</h2>
+				</div>
+				<div class="col-md-3">
+					<h2>Alert</h2>
+				</div>
+				<div class="col-md-3">
+					<h2>Day</h2>
+				</div>
+			</div>
+			<!-- end of row -->
+			<div ng-repeat="alertdet in alertd">
+				<div class="row">
+					<div class="col-md-3">{{alertdet.client_name}}</div>
+					<div class="col-md-3">{{alertdet.building_name}}</div>
+					<div class="col-md-3">{{alertdet.alert}}</div>
+					<div class="col-md-3">{{alertdet.date}}</div>
+				</div>
+				<!-- end of row -->
+			</div>
+			<!-- end of repeat -->
+		</div>
+		<!-- container -->
+	</div>
+	<!-- end of controller -->
+
+</body>
+<script>
+    $(document).ready(function() {
+        $('.datepicker').datepicker();
+    });
+</script>
+<script>
+    "use strict";
+    function alertController($scope, $http, $location) {
+
+    $scope.parent = {daydate:''};
+        $scope.criterias = [ {
+            name : 'Day',
+            value : 'Day',
+            dis : 'true'
+        }, {
+            name : 'Client',
+            value : 'Client',
+            dis : 'true'
+        }, {
+            name : 'Building',
+            value : 'Building',
+            dis : 'true'
+        }];
+        $scope.alertcriteria = $scope.criterias[0];
+        $scope.dsp = $scope.criterias[0].name;
+
+        $scope.signIn = function() {
+            $http({
+                method : 'POST',
+                url : '/signin',
+                data : {
+                    "username" : $scope.username,
+                    "password" : $scope.password
+                }
+
+            }).success(function(response) {
+                // alert("resp");
+                if (response.signin == "Success") {
+                    alert("Sign In Success");
+                } else {
+                    alert("No response");
+                }
+            }).error(function(error) {
+                alert(error);
+            });
+
+        }; //end of scope signin
+
+        $scope.criteriach = function() {
+            $scope.dsp = $scope.alertcriteria.name;
+            if ($scope.dsp == 'Building') {
+                $http({
+                    method : 'GET',
+                    url : '/getclient',
+                    data : {}
+                }).success(function(response) {
+                    console.log(response);
+                    $scope.clients = response.results;
+
+                }).error(function(error) {
+
+                    console.log(error);
+                });
+            }
+            if ($scope.dsp == 'Client') {
+                $http({
+                    method : 'GET',
+                    url : '/getclient',
+                    data : {}
+                }).success(function(response) {
+                    console.log(response);
+                    $scope.clients = response.results;
+
+                }).error(function(error) {
+
+                    console.log(error);
+                });
+            }
+
+        };
+
+        $scope.getBuild = function(clients1) {
+            console.log(clients1.client_id);
+            $http({
+                method : 'POST',
+                url : '/clientbuild',
+                data : {
+                    "clientid" : clients1.client_id
+                }
+            }).success(function(response) {
+                //alert("K");
+                $scope.bds = 'true';
+                $scope.builds = response;
+            }).error(function(response) {
+            });
+
+        };
+
+        $scope.getAlertDate = function() {
+            $http({
+                method : "GET",
+                url : '/getAlert'
+
+            }).success(function(response) {
+            //console.log($scope.parent.daydate);
+            //console.log(response[0].date);
+                var respdate = new Array();
+                var counter = 0;
+                for (var i = 0; i < response.length; i++) {
+                
+                    if (response[i].date == $scope.parent.daydate) {
+                    //console.log("INIF");
+                        respdate[counter++] = response[i];
+                    }
+                }
+                for (var j = 0; j < respdate.length; j++) {
+                    console.log(respdate[j].alert_id);
+                }
+                $scope.alertd = respdate;
+            }).error(function(error) {
+
+            });
+        };
+        
+        $scope.changeCmodel = function(clients12)
+            {    
+                $scope.alertC = clients12.client_name;
+            };
+        
+        $scope.getAlertClient = function() {
+            $http({
+                method : "GET",
+                url : '/getAlert'
+
+            }).success(function(response) {
+            //console.log($scope.parent.daydate);
+            //console.log(response[0].date);
+            console.log($scope.alertC);
+                var respdate = new Array();
+                var counter = 0;
+                for (var i = 0; i < response.length; i++) {
+                
+                    if (response[i].client_name == $scope.alertC) {
+                    //console.log("INIF");
+                        respdate[counter++] = response[i];
+                    }
+                }
+                
+                $scope.alertd = respdate;
+            }).error(function(error) {
+
+            });
+        };
+        
+        $scope.changeBmodel = function(building1)
+        {
+            $scope.buildingC = building1.building_name;
+        };
+        
+        $scope.getAlertBuilding = function() {
+            $http({
+                method : "GET",
+                url : '/getAlert'
+
+            }).success(function(response) {
+            //console.log($scope.parent.daydate);
+            //console.log(response[0].date);'
+            /* response = JSON.stringify(response);
+            alert(response); */
+                var respdate = new Array();
+                var counter = 0;
+                for (var i = 0; i < response.length; i++) {
+                
+                    if (response[i].building_name == $scope.buildingC) {
+                    //console.log("INIF");
+                        respdate[counter++] = response[i];
+                    }
+                }
+                for (var j = 0; j < respdate.length; j++) {
+                    console.log(respdate[j].alert_id);
+                }
+                $scope.alertd = respdate;
+            }).error(function(error) {
+
+            });
+        };
+    }
+</script>
+
+</html>

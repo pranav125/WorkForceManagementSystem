@@ -1,0 +1,162 @@
+<html>
+<head>
+<link rel="stylesheet"
+	href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery.js"></script>
+<script
+	src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+<link rel='stylesheet' href='./stylesheets/search.css' />
+<link rel='stylesheet' href='/stylesheets/bootstrap.min.css' />
+<link rel='stylesheet' href='/stylesheets/custom.css' />
+</head>
+<script
+	src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
+<body ng-app="instantSearch" ng-controller="InstantSearchController"
+	ng-init="search();">
+	<div class="row shadow">
+		<div class="col-md-4" style="padding-left: 60px;">
+			<a href="/goToClientsHome" style="text-decoration: none;"><h3>
+
+					&nbsp; <font color="#157DEC" size="4">Workforce Management
+						System</font>
+				</h3></a>
+		</div>
+
+		<div class="col-md-1" style="margin-top: 20px; margin-bottom: 20px;">
+			<a href="./redirectToAddGuard" class="btn btn-default add">Add a
+				Guard</a>
+		</div>
+		<div class="col-md-1" style="margin-top: 20px; margin-bottom: 20px;">
+
+			<a href="./goToClientsHome" class="btn btn-default add">Clients</a>
+		</div>
+		<div class="col-md-1" style="margin-top: 20px; margin-bottom: 20px;">
+
+			<a href="./redirectToAssignGuard" class="btn btn-default add">Assign
+				Guard</a>
+		</div>
+
+		<div class="col-md-1" style="margin-top: 20px; margin-bottom: 20px;">
+
+			<a href="./report" class="btn btn-default add">Reports</a>
+		</div>
+		
+		<div class="col-md-1" style="margin-top: 20px; margin-bottom: 20px;">
+
+			<a href="./redirectToUpdateGuard" class="btn btn-default add">Update Guards</a>
+		</div>
+		
+		<div class="col-md-1" style="margin-top: 20px; margin-bottom: 20px;">
+
+			<a href="./alert" class="btn btn-default add">Alerts</a>
+		</div>
+
+		<div class="col-md-2" style="margin-top: 20px; margin-bottom: 20px;">
+			<label name="firstname">Welcome, Admin</label>
+		</div>
+	</div>
+	<div class="row shadow" style="margin: 10px;">
+		<div class="bar">
+			<!-- Create a binding between the searchString model and the text field -->
+			<input type="search" id="searchString" ng-model="searchString"
+				class="form-control" style="width: 70%; margin: 10px;"
+				placeholder="Search Guard" />
+
+			<h3 ng-show="(items | filter:searchString).length == 0"
+				style="width: 70%; margin: 10px;">
+				<small style="color: black;">No Guards Found..</small>
+			</h3>
+
+		</div>
+		<div ng-repeat="data in items | filter:searchString"
+			style="margin: 10px;">
+			<div class="col-md-12" style="margin-bottom: 10px;">
+				<h3>
+					<small style="color: black; cursor: pointer;"> <span>{{data.firstname}}
+							{{data.lastname}} : (Guard Id : {{data.guard_id}})</span>
+					</small>
+				</h3>
+				<input type="button" value="Delete" class="btn btn-default"
+					ng-click="guard(data.guard_id)">
+				
+				<input type="button" class="btn btn-default" name="firstname"
+					value="Location" ng-click="guardLocation(data.guard_id)" />
+			</div>
+		</div>
+	</div>
+	<script>
+		var app = angular.module("instantSearch", []);
+
+		app
+				.controller(
+						'InstantSearchController',
+						function($scope, $http) {
+							$scope.search = function() {
+								$http({
+									method : 'GET',
+									url : '/searchGuard'
+								})
+										.success(
+												function(data, status, headers,
+														config) {
+													$scope.items = data;
+												}).error(
+												function(data, status, headers,
+														config) {
+
+												});
+							}
+
+							$scope.guard = function(param) {
+
+								$http({
+									method : 'POST',
+									url : '/deleteGuard',
+									data : {
+										"guard_id" : param
+									}
+								})
+										.success(
+												function(data, status, headers,
+														config) {
+													$scope.search();
+												}).error(
+												function(data, status, headers,
+														config) {
+												});
+							}
+
+							$scope.guardLocation = function(guard_id) {
+								$http({
+									method : 'POST',
+									url : '/getGuardLocation',
+									data : {
+										"guard_id" : guard_id
+									}
+								})
+										.success(
+												function(data, status, headers,
+														config) {
+													var latitude = data[0].start_latitude;
+													var longitude = data[0].start_longitude;
+													alert(latitude + ","
+															+ longitude);
+													window
+															.open(
+																	"/diplay_location_guard?latitude="
+																			+ latitude
+																			+ "&longitude="
+																			+ longitude,
+																	'popUpWindow',
+																	'height=700,width=700,left=10,top=10,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes');
+
+												}).error(
+												function(data, status, headers,
+														config) {
+
+												});
+							}
+						})
+	</script>
+</body>
+</html>

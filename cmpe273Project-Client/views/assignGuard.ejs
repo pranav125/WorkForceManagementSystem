@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet"
+	href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+
+<script type="text/javascript"
+	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyApNXTf01V3vzNMtRNGYBCxEXEaxAv8fBM">
+	
+</script>
+
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+<link rel='stylesheet' href='/stylesheets/bootstrap.min.css' />
+<link rel='stylesheet' href='/stylesheets/custom.css' />
+
+<script>
+var loadResponse;
+//var checkpointArray;
+	function ram() {
+		document.getElementById("sample").innerHTML = "Client Name:";
+	};
+
+	function populateDropDown() {
+		for (var index = 0; index < loadResponse.length; index++) {
+			var each = loadResponse[index];
+			//checkpointArray.push(each.check_point_id);
+			$("#Client").append('<option value='+each.check_point_id+'>(Client Name) ' + each.client_name+ ' | (Building Name) ' + each.building_name+ ' | (Checkpoint Id) ' + each.check_point_id+ '</option>');
+			//$("#Check[index]").append('<input type="hidden" value="Client">(check_point_id) ' + each.check_point_id+ '/>');
+
+		}
+	};
+
+	function selectClient() {	
+		var selectedTextFromDropDown = $('#Client :selected').text();
+		var splittedText=selectedTextFromDropDown.split(" ");
+		
+		
+		 var data=jQuery.grep(loadResponse, function(obj) { return obj.client_name === (splittedText[2]+" "+splittedText[3]);})[0];
+		 
+		 $("#sample").html("Client: " + data.client_name);
+		 $("#building").html("Building: " + data.building_name);
+		 
+		 var myLatlng = new google.maps.LatLng(data.start_latitude,data.end_longitude);
+		 
+		  var mapOptions = {
+		    zoom: 18,
+		    center: myLatlng
+		  }
+		  
+		  var map = new google.maps.Map(document.getElementById('sample1'), mapOptions);
+
+		  var marker = new google.maps.Marker({
+		      position: myLatlng,
+		      map: map,
+		      title: 'Hello World!'
+		  });
+		$("#sample1").html('<img src="https://maps.googleapis.com/maps/api/staticmap?center='+data.start_latitude+','+ data.end_longitude+'&zoom=11&size=200x200&markers=color:blue|label:S|style="margin: 5px">');
+		
+	};
+
+	function selectGuard() {
+		$.ajax({
+			url : "http://localhost:3000/getGuard",
+			success : function(response) {
+				response = jQuery.parseJSON(response);
+				
+				for (var index = 0; index < response.length; index++) {
+					var each = response[index];
+					
+					$("#Guard_id").append('<option value='+each.guard_id+'>' + each.firstname+ '</option>');
+				}
+			},
+			error : function() {
+				alert("Something went wrong!!")
+			}
+		});
+	};
+	
+	function assignGuard() {
+		var selectedTextFromDropDown = $('#Client :selected').val();
+		var assignGuardFromDropDown = $('#Guard_id :selected').val();
+		//var selectedTextFromDropDown1 = $('#Check').text();
+		//console.log("checkid:"+selectedTextFromDropDown1);
+		var splittedText=selectedTextFromDropDown.split(" ");
+		
+		alert(selectedTextFromDropDown + ","+assignGuardFromDropDown);
+		var request_data = JSON.stringify({
+				"check_point_id":selectedTextFromDropDown,
+				"guard_id":assignGuardFromDropDown
+		});
+		
+		//var request_data= JSON.stringify({"client_name": splittedText[2], "building_name": splittedText[7], "guard_firstname" : assignGuardFromDropDown, "check_point_id" : splittedText[12]});
+		
+		console.log(request_data);
+			
+		$.ajax({
+			url : "http://localhost:3000/assignGuard",
+			contentType: "application/json",
+			method : "post",
+			data: request_data,
+			success : function(response) {
+				//response = jQuery.parseJSON(response);
+				/* for (var index = 0; index < response.length; index++) {
+					var each = response[index];	
+					$("#Guard_id").append('<option value="Guard">' + each.firstname+ ' </option>');
+				} */
+				
+				window.location("./redirectToGuards");
+				//console.log("success");
+			},
+			error : function() {
+				alert("Something went wrong!!");
+			}
+		});
+	};
+
+	$(document).ready(function() {
+		$.ajax({
+			url : "http://localhost:3000/getClientAndBuilding",
+			contentType : "application/json",
+			success : function(response) {
+				response = jQuery.parseJSON(response);
+				alert(response);
+				loadResponse=response;
+				populateDropDown();
+				selectGuard();
+			},
+			error : function() {
+				alert("Something went wrong!!")
+			},
+		});
+	});
+
+</script>
+</head>
+<body>
+	<div class="row shadow">
+		<div class="col-md-4" style="padding-left: 60px;">
+			<a href="/goToClientsHome" style="text-decoration: none;"><h3>
+
+					&nbsp; <font color="#157DEC" size="4">Workforce Management
+						System</font>
+				</h3></a>
+		</div>
+
+		<div class="col-md-1" style="margin-top: 20px; margin-bottom: 20px;">
+			<a href="./redirectToAddGuard" class="btn btn-default add">Add a
+				Guard</a>
+		</div>
+		<div class="col-md-1" style="margin-top: 20px; margin-bottom: 20px;">
+
+			<a href="./goToClientsHome" class="btn btn-default add">Clients</a>
+		</div>
+<div class="col-md-1" style="margin-top: 20px; margin-bottom: 20px;">
+
+			<a href="./redirectToGuards" class="btn btn-default add">Guards</a>
+		</div>
+		<div class="col-md-1" style="margin-top: 20px; margin-bottom: 20px;">
+
+			<a href="./report" class="btn btn-default add">Reports</a>
+		</div>
+		
+		<div class="col-md-1" style="margin-top: 20px; margin-bottom: 20px;">
+
+			<a href="./redirectToUpdateGuard" class="btn btn-default add">Update Guards</a>
+		</div>
+		
+		<div class="col-md-1" style="margin-top: 20px; margin-bottom: 20px;">
+
+			<a href="./alert" class="btn btn-default add">Alerts</a>
+		</div>
+
+		<div class="col-md-2" style="margin-top: 20px; margin-bottom: 20px;">
+			<label name="firstname">Welcome, Admin</label>
+		</div>
+	</div>
+	
+	<div class="row shadow" style="margin: auto; margin-top: 20px; padding-bottom: 10px; width: 900px;">
+		<div class="col-md-12 shadow"
+			style="padding: 10px; margin-bottom: 10px;" align="center">
+			<label style="font-size: 20px;">Assign Guard</label>
+		</div>
+
+		<div class="col-md-12" align="center" id="demo">
+			<select onchange="selectClient()" name="Client" id="Client"
+				class="form-control" style="width: 50%;">
+				<option>Select</option>
+
+			</select>
+			<input type="hidden" id="Check[]">
+		</div>
+
+		<div class="col-md-12" align="right">
+			<select onchange="" name="Guard" id="Guard_id" class="form-control"
+				style="width: 20%;">
+				<option>Select</option>
+			</select>
+		</div>
+
+		<br>
+		<div id="sample"></div>
+		<div id="building"></div>
+		<br>
+		<div id="sample1"></div>
+
+		<div class="col-md-12" align="center" style="margin-top: 10px;">
+			<input type="button" name="btn_add_client" id="btn_add_client"
+				class="btn btn-default"
+				style="background: #157DEC; color: white; width: 50%;"
+				value="Assign Guard" onclick="assignGuard()" />
+		</div>
+	
+	</div>
+</body>
+</html>

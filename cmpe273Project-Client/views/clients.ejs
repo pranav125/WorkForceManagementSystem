@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript"
+	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyApNXTf01V3vzNMtRNGYBCxEXEaxAv8fBM">
+	
+</script>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+<script
+	src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<link rel='stylesheet' href='/stylesheets/bootstrap.min.css' />
+<link rel='stylesheet' href='/stylesheets/custom.css' />
+<script
+	src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
+</head>
+<body ng-app="clients" ng-controller="clients"
+	ng-init="loadClients();getAlert();">
+	<div class="row shadow">
+		<div class="col-md-4" style="padding-left: 60px;">
+			<a href="/goToClientsHome" style="text-decoration: none;"><h3>
+
+					&nbsp; <font color="#157DEC" size="4">Workforce Management
+						System</font>
+				</h3></a>
+		</div>
+
+		<div class="col-md-1" style="margin-top: 20px; margin-bottom: 20px;">
+			<a href="./client_redirect" class="btn btn-default add">Add a
+				Client</a>
+		</div>
+		<div class="col-md-1" style="margin-top: 20px; margin-bottom: 20px;">
+
+			<a href="./redirectToGuards" class="btn btn-default add">Guards</a>
+		</div>
+		<div class="col-md-1" style="margin-top: 20px; margin-bottom: 20px;">
+
+			<a href="./report" class="btn btn-default add">Reports</a>
+		</div>
+		<div class="col-md-1" style="margin-top: 20px; margin-bottom: 20px;">
+
+			<a href="./alert" class="btn btn-default add">Alerts</a>
+		</div>
+
+		<div class="col-md-2" style="margin-top: 20px; margin-bottom: 20px;">
+			<label name="firstname">Welcome, Admin</label>
+		</div>
+	</div>
+
+	<div class="row" style="height: 100%">
+		<div class="col-md-12" style="margin: 20px; height: 100%;">
+			<input type="text" ng-model="searchBox" placeholder="search here.."
+				class="form-control" style="width: 70%; margin: 10px;" />
+			<h3 ng-show="(clientsList | filter:searchBox).length == 0"
+				style="width: 70%; margin: 10px;">
+				<small style="color: black;">No Clients Found..</small>
+			</h3>
+		</div>
+		<div class="col-md-8 shadow" style="margin-left: 40px; height: 100%;">
+			<div class="row">
+				<div class="col-md-12 shadow">
+					<h4>Clients</h4>
+				</div>
+
+				<div ng-repeat="client in clientsList | filter:searchBox"
+					style="margin: 10px;">
+					<div class="col-md-12" style="margin-bottom: 10px;">
+						<h3>
+							<small style="color: black; cursor: pointer;"> <span>{{client.client_name}}</span>
+							</small>
+						</h3>
+						<input type="button" class="btn btn-default" name="firstname"
+							value="Buildings"
+							ng-click="buildings(client.client_id,client.client_name)" /> <input
+							type="button" class="btn btn-default" name="firstname"
+							value="Bills"
+							ng-click="bills(client.client_name,client.client_id,client.monthly_service_charge,client.Balance,client.client_number)" />
+						<input type="button" class="btn btn-default" name="delete"
+							value="Delete" ng-click="deleteClient(client.client_id)" /> <input
+							type="button" class="btn btn-default" name="delete"
+							value="Update" ng-click="updateClient(client.client_id)" />
+					</div>
+
+				</div>
+
+			</div>
+		</div>
+		
+
+	</div>
+	<script>
+		var connections = angular.module('clients', []);
+
+		connections
+				.controller(
+						'clients',
+						function($scope, $http) {
+
+							$scope.loadClients = function() {
+								$http({
+									method : 'GET',
+									url : '/clients'
+								})
+										.success(
+												function(data, status, headers,
+														config) {
+													
+													$scope.clientsList = data.results;
+												}).error(
+												function(data, status, headers,
+														config) {
+												});
+							};
+									
+							$scope.updateClient = function(client_id) {
+								window.location = "./goToUpdate?client_id="+ client_id;
+							};
+
+							$scope.bills = function(client_name, client_id,
+									monthly_charge, balance, client_number) {
+
+								window
+										.open(
+												"./generateBill?client_id="
+														+ client_id
+														+ "&monthly_charge="
+														+ monthly_charge
+														+ "&balance=" + balance
+														+ "&client_name="
+														+ client_name
+														+ "&client_number="
+														+ client_number,
+												'popUpWindow',
+												'height=700,width=700,left=10,top=10,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes');
+
+							};
+
+							$scope.buildings = function(client_id, client_name) {
+								window.location = "/building/showBuilding?client_id="
+										+ client_id
+										+ "&client_name="
+										+ client_name;
+							};
+
+							$scope.deleteClient = function(client_id) {
+								$http({
+									method : 'POST',
+									url : '/deleteClient',
+									data : {
+										"client_id" : client_id
+									}
+								})
+										.success(
+												function(data, status, headers,
+														config) {
+													if (data.login == '1') {
+														$scope.loadClients();
+													}
+
+												}).error(
+												function(data, status, headers,
+														config) {
+												});
+							};
+							
+							$scope.getAlert = function(client_id) {
+								$http({
+									method : 'GET',
+									url : '/getAlert',
+								})
+										.success(
+												function(data, status, headers,
+														config) {
+													
+													$scope.alertsList = data;
+												//alert($scope.alertsList);
+												}).error(
+												function(data, status, headers,
+														config) {
+												});
+							};
+						});
+	</script>
+</body>
+</html>

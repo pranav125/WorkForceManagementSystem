@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html data-ng-app='guardProfile'>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular-resource.min.js">
+	
+</script>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular-route.min.js">
+	
+</script>
+<script src="https://cdn.firebase.com/js/client/2.0.4/firebase.js"></script>
+<script
+	src="https://cdn.firebase.com/libs/angularfire/0.9.0/angularfire.min.js"></script>
+<script type="text/javascript"
+	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyApNXTf01V3vzNMtRNGYBCxEXEaxAv8fBM">
+	
+</script>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+<script
+	src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<link rel='stylesheet' href='/stylesheets/bootstrap.min.css' />
+<link rel='stylesheet' href='/stylesheets/custom.css' />
+
+<body data-ng-controller='AlertController'
+	data-ng-init="init();getAlerts();">
+	<div class="row shadow">
+		<div class="col-md-4" style="padding-left: 60px;">
+			<h3>
+
+				&nbsp; <font color="#157DEC" size="4">Workforce Management
+					System</font>
+			</h3>
+		</div>
+		<div class="col-md-2" style="margin-top: 20px; margin-bottom: 20px;">
+			<label name="firstname">Welcome, Guard</label>
+		</div>
+	</div>
+	<div class="row" style="height: 100%">
+		<div class="col-md-6  shadow" style="margin: 20px; height: 100%;">
+			<div class="row">
+				<div class="col-md-12 shadow">
+					<h4>Alerts Submitted:</h4>
+				</div>
+				<div ng-repeat="x in alertText" class="col-md-12"
+					style="cursor: pointer;">
+					<h3>
+						<small style="color: black; cursor: pointer;"> <span>{{
+								x.alert }}</span>
+						</small>
+					</h3>
+				</div>
+			</div>
+
+		</div>
+		<div class="col-md-4 shadow" style="margin: 20px; height: 100%;">
+			<div class="row">
+				<div class="col-md-12 shadow">
+					<h4>Alert</h4>
+				</div>
+				<div class="col-md-12" style="cursor: pointer;margin-top: 10px;">
+					<span>Alert Type:<select name="addAlert-select" value="Select"
+						data-ng-model="alert" class="form-control">
+							<option value="" selected="selected">Select</option>
+							<option value="Attempt of Robbery">Attempt of Robbery</option>
+							<option value="Suspiscious Activity arouond the checkpoint">Suspiscious
+								Activity arouond the checkpoint</option>
+							<option value="Unknown Intruder entering building">Unknown
+								Intruder entering building</option>
+							<option value="Parking voilation">Parking voilation</option>
+							<option value="other">Other</option>
+					</select></span>
+				</div>
+				<div class="col-md-12" style="cursor: pointer;margin-top: 10px;">
+					<span>Severity:<select name="severity-select"  value="Select"
+						data-ng-model="severity" class="form-control">
+							<option value="" selected="selected">Select</option>
+							<option value="High">High</option>
+							<option value="Intermediate">Intermediate</option>
+							<option value="Low">Low</option>
+					</select></span>
+				</div>
+				<div class="col-md-12" style="cursor: pointer;margin-top: 10px;">
+					<span>Status:<select name="status-select" value="Select"
+						data-ng-model="status" class="form-control">
+							<option value="" selected="selected">Select</option>
+							<option value="Under Investigation">Under Investigation</option>
+							<option value="Resolved">Resolved</option>
+					</select></span>
+				</div>
+				<div class="col-md-12" style="cursor: pointer;margin-top: 10px;margin-bottom: 10px;">
+					<span>
+						<button class="btn btn-default add" data-ng-click="onClickAdd()">Submit
+							Alert</button>
+					</span>
+				</div>
+			</div>
+
+		</div>
+	</div>
+	<script>
+		var guardProfile = angular.module('guardProfile', []);
+		guardProfile.controller('AlertController', function($scope, $http) {
+			console.log("we are in controller alert guard");
+			$scope.onClickAdd = function() {
+				$http({
+					method : 'POST',
+					url : '/alert/create_alert',
+					data : {
+						"alert" : $scope.alert,
+						"severity" : $scope.severity,
+						"status" : $scope.status,
+						"date" : $scope.date,
+						"client_id_fk" : $scope.client_id_fk,
+						"building_id_fk" : $scope.building_id_fk
+					}
+				}).success(function(response) {
+					alert("Alert has been Submitted");
+				}).error(function(error) {
+					console.log("we are in error!!");
+					alert("error");
+				});
+			};
+
+			//ddddd
+			$scope.init = function() {
+				$http({
+					method : 'GET',
+					url : '/getCheckPointGetGuard'
+				}).success(function(response) {
+					console.log("We are in init");
+					$scope.check_point_id = response[0].check_point_id;
+					$scope.building_id_fk = response[0].buidling_id;
+					$scope.client_id_fk = response[0].client_id;
+					//alert($scope.building_id_fk);
+				}).error(function(error) {
+					console.log("we are in error!!");
+					alert("error");
+				});
+			};
+			/////////////////////////////////
+			////////////
+			$scope.getAlerts = function() {
+				$http({
+					method : 'GET',
+					url : '/alert/get_alert'
+				}).success(function(response) {
+					console.log("We are in alert");
+					$scope.alertText = response;
+					//alert(response);
+					//alert($scope.alertText);
+				}).error(function(error) {
+					console.log("we are in error!!");
+					alert("error");
+				});
+			};
+
+		});
+	</script>
+</body>
+</html>

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript"
+	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyApNXTf01V3vzNMtRNGYBCxEXEaxAv8fBM">
+	
+</script>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+<link rel='stylesheet' href='/stylesheets/bootstrap.min.css' />
+<link rel='stylesheet' href='/stylesheets/custom.css' />
+
+<script type="text/javascript">
+var loadResponse;
+function populateGuardDropdown(){
+	for(var index=0;index<loadResponse.length;index++){
+		$("#guardDropdown").append('<option value="guardDropdown">' + loadResponse[index].firstname+ '</option>');
+	}
+};
+
+function selectGuard() {
+	var selectedTextFromDropdown = $('#guardDropdown :selected').text();
+	
+	var data=jQuery.grep(loadResponse, function(obj) { return obj.firstname === selectedTextFromDropdown;})[0];
+	
+	$("#guardId").val(data.guard_id);
+	$("#Email").val(data.email);
+	$("#Firstname").val(data.firstname);
+	$("#Lastname").val(data.lastname);
+	$("#Address").val(data.address);
+	$("#City").val(data.city);
+	$('#State option').filter(function() {return ($(this).text() == data.state);}).prop('selected', true);
+	$("#ZipCode").val(data.zipcode);
+	$("#PhoneNumber").val(data.phonenumber);
+
+};
+
+function updateGuardEntry(){
+	var data=jQuery.grep(loadResponse, function(obj) { return obj.firstname === selectedTextFromDropdown;})[0];
+	var requestData = jQuery.parseJSON(data);
+
+	$.ajax({
+		url : "http://localhost:3000/updateGuard",
+		contentType : "application/json",
+		method:"post",
+		data: requestData,
+		success : function(response) {
+			alert("here");
+			/* response = jQuery.parseJSON(response);
+			loadResponse=response;
+			populateGuardDropdown();
+			 */
+			 window.location("./redirectToGuards");
+		},
+		error : function() {
+			alert("Something went wrong!!")
+		},
+	});
+};
+
+
+$(document).ready(function() {
+	$.ajax({
+		url : "http://localhost:3000/getAllGuards",
+		contentType : "application/json",
+		success : function(response) {
+			
+			response = jQuery.parseJSON(response);
+			loadResponse=response;
+			populateGuardDropdown();
+			
+		},
+		error : function() {
+			alert("Something went wrong!!")
+		},
+	});
+});
+
+
+</script>
+
+</head>
+<body>
+	<div class="row shadow">
+		<div class="col-md-4" style="padding-left: 60px;">
+			<a href="/goToClientsHome" style="text-decoration: none;"><h3>
+
+					&nbsp; <font color="#157DEC" size="4">Workforce Management
+						System</font>
+				</h3></a>
+		</div>
+
+		<div class="col-md-1" style="margin-top: 20px; margin-bottom: 20px;">
+			<a href="./redirectToAddGuard" class="btn btn-default add">Add a
+				Guard</a>
+		</div>
+		<div class="col-md-1" style="margin-top: 20px; margin-bottom: 20px;">
+
+			<a href="./goToClientsHome" class="btn btn-default add">Clients</a>
+		</div>
+		<div class="col-md-1" style="margin-top: 20px; margin-bottom: 20px;">
+
+			<a href="./redirectToAssignGuard" class="btn btn-default add">Assign
+				Guard</a>
+		</div>
+
+		<div class="col-md-1" style="margin-top: 20px; margin-bottom: 20px;">
+
+			<a href="./report" class="btn btn-default add">Reports</a>
+		</div>
+		
+		<div class="col-md-1" style="margin-top: 20px; margin-bottom: 20px;">
+
+			<a href="./redirectToUpdateGuard" class="btn btn-default add">Update Guards</a>
+		</div>
+		
+		<div class="col-md-1" style="margin-top: 20px; margin-bottom: 20px;">
+
+			<a href="./alert" class="btn btn-default add">Alerts</a>
+		</div>
+
+		<div class="col-md-2" style="margin-top: 20px; margin-bottom: 20px;">
+			<label name="firstname">Welcome, Admin</label>
+		</div>
+	</div>
+	<form action="/updateGuard" method="post">
+	<div class="row shadow" style="margin:auto;margin-top:20px;padding-bottom:10px; width: 900px;">
+		<div class="col-md-12 shadow" style="padding: 10px;margin-bottom: 10px;" align="center">
+			<label style="font-size: 20px;" >Update Guard</label>			
+		</div>
+		
+		<div class="col-md-12" align="center" id="demo">
+			<select onchange="selectGuard()" name="guardDropdown" id="guardDropdown"
+				class="form-control" style="width: 50%;">
+				<option>Select Guard</option>
+
+			</select>
+		</div>
+		<div class="col-md-12" align="center">
+			<label for="guard_number">Guard Number (SSN: xxx-xx-xxxx)</label>
+			<input type="text" name="Guard_id" pattern="^\d{3}-\d{2}-\d{4}$" id="guardId" class="form-control" style="width:50%;" required/>
+		</div>
+		<div class="col-md-12" align="center">
+			<label>Email</label>
+			<input type="email" name="Email" id="Email" class="form-control"  style="width:50%;"/>
+		</div>
+		<div class="col-md-12" align="center">
+			<label>First Name</label>
+			<input type="text" name="Firstname" id="Firstname" class="form-control"  style="width:50%;"/>
+		</div>
+		<div class="col-md-12" align="center">
+			<label>Last Name</label>
+			<input type="text" name="Lastname" id="Lastname" class="form-control"  style="width:50%;"/>
+		</div>
+		<div class="col-md-12" align="center">
+			<label>Address</label>
+			<input type="text" name="Address" id="Address" class="form-control"  style="width:50%;"/>
+		</div>
+		<div class="col-md-12" align="center">
+			<label>City</label>
+			<input type="text" name="City" id="City" class="form-control"  style="width:50%;"/>
+		</div>
+		<div class="col-md-12" align="center">
+			<label>State</label>
+			<select name="State" id="State" class="form-control"  style="width:50%;">
+				<option>--------------Select---------------</option>
+				<option value="AL">Alabama</option>
+				<option value="AK">Alaska</option>
+				<option value="AZ">Arizona</option>
+				<option value="AR">Arkansas</option>
+				<option value="CA">California</option>
+				<option value="CO">Colorado</option>
+				<option value="CT">Connecticut</option>
+				<option value="DE">Delaware</option>
+				<option value="DC">District Of Columbia</option>
+				<option value="FL">Florida</option>
+				<option value="GA">Georgia</option>
+				<option value="HI">Hawaii</option>
+				<option value="ID">Idaho</option>
+				<option value="IL">Illinois</option>
+				<option value="IN">Indiana</option>
+				<option value="IA">Iowa</option>
+				<option value="KS">Kansas</option>
+				<option value="KY">Kentucky</option>
+				<option value="LA">Louisiana</option>
+				<option value="ME">Maine</option>
+				<option value="MD">Maryland</option>
+				<option value="MA">Massachusetts</option>
+				<option value="MI">Michigan</option>
+				<option value="MN">Minnesota</option>
+				<option value="MS">Mississippi</option>
+				<option value="MO">Missouri</option>
+				<option value="MT">Montana</option>
+				<option value="NE">Nebraska</option>
+				<option value="NV">Nevada</option>
+				<option value="NH">New Hampshire</option>
+				<option value="NJ">New Jersey</option>
+				<option value="NM">New Mexico</option>
+				<option value="NY">New York</option>
+				<option value="NC">North Carolina</option>
+				<option value="ND">North Dakota</option>
+				<option value="OH">Ohio</option>
+				<option value="OK">Oklahoma</option>
+				<option value="OR">Oregon</option>
+				<option value="PA">Pennsylvania</option>
+				<option value="RI">Rhode Island</option>
+				<option value="SC">South Carolina</option>
+				<option value="SD">South Dakota</option>
+				<option value="TN">Tennessee</option>
+				<option value="TX">Texas</option>
+				<option value="UT">Utah</option>
+				<option value="VT">Vermont</option>
+				<option value="VA">Virginia</option>
+				<option value="WA">Washington</option>
+				<option value="WV">West Virginia</option>
+				<option value="WI">Wisconsin</option>
+				<option value="WY">Wyoming</option>
+			</select>
+		</div>
+		<div class="col-md-12" align="center">
+			<label>ZipCode (xxxxx / xxxxx-xxxx)</label>
+			<input type="text" pattern="^\d{5}(?:[-\s]\d{4})?$" name="ZipCode" id="ZipCode" class="form-control"  style="width:50%;"/>
+		</div>
+		<div class="col-md-12" align="center">
+			<label>Phone Number (xxx-xxx-xxxx)</label>
+			<input type="tel" name="PhoneNumber" pattern="^\d{3}-\d{3}-\d{4}$" id="PhoneNumber" class="form-control" style="width:50%;" required/>
+		</div>
+		<div class="col-md-12" align="center" style="margin-top: 10px;">
+			<input type="submit"  onsubmit="updateGuardEntry()" name="btn_add_guard" id="btn_add_guard" class="btn btn-default" style="background: #157DEC; color: white;width:50%;" value="Update Guard"></button>
+		</div>
+	</div>
+	</form>
+	
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Workforce Management System</title>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+<script
+	src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.js"></script>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular-route.min.js"></script>
+<link rel='stylesheet' href='/stylesheets/bootstrap.min.css' />
+<link rel='stylesheet' href='/stylesheets/custom.css' />
+</head>
+<body>
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+		<div class="container-fluid">
+			<!-- Brand and toggle get grouped for better mobile display -->
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed"
+					data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+					<span class="sr-only">Toggle navigation</span> <span
+						class="icon-bar"></span> <span class="icon-bar"></span> <span
+						class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#"><span
+					style="margin-left: 500px">WorkForce Management Portal</span></a>
+			</div>
+			<!-- Collect the nav links, forms, and other content for toggling -->
+			<div class="collapse navbar-collapse"
+				id="bs-example-navbar-collapse-1"></div>
+			<!-- /.navbar-collapse -->
+		</div>
+		<!-- /.container-fluid -->
+	</nav>
+
+	<div class="container" style="margin: 100px 0px 10px 350px;">
+		<div class="jumbotron"
+			style="width: 500px; box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.15);">
+			<h2 style="color: blue;">Sign Up</h2>
+			<form role="form" action="/UserSignIn/signup" method="post">
+				<div class="form-group">
+					<label >Username </label> <input type="text"
+						style="width: 250px" id="username" name="username" placeholder=""
+						ng-model="username">
+						<input type="hidden" value="<%= guard_id %>" id="gaurd_id" name="guard_id"/>
+				</div>
+				<div class="form-group">
+					<label >Password </label> <input
+						type="password" style="width: 250px" id="password" name="password" placeholder=""
+						ng-model="password">
+				</div>
+				<button type="submit" class="btn btn-primary">Add Guard</button>
+			</form>
+		</div>
+
+
+	</div>
+</body>
+</html>

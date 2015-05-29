@@ -1,0 +1,11 @@
+.shadow
+{
+	box-shadow: 1px 3px 4px 0 rgba(0, 0, 0, 0.15);
+}
+
+.add:HOVER {
+
+background: #157DEC; 
+color: white;
+	
+}
